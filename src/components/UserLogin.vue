@@ -1,0 +1,104 @@
+<template>
+  <div class="login-container">
+    <h1>Login</h1>
+    <form @submit.prevent="handleLogin">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" v-model="email" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" v-model="password" required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
+import axios from "../axios";
+
+export default {
+  name: "UserLogin",
+  setup() {
+    const router = useRouter();
+    const authStore = useAuthStore();
+    const email = ref("");
+    const password = ref("");
+
+    const handleLogin = async () => {
+      try {
+        const response = await axios.post("/api/users/login", {
+          email: email.value,
+          password: password.value,
+        });
+        console.log("Login successful:", response.data);
+        authStore.login();
+        alert("Login successful!");
+        router.push("/");
+      } catch (error) {
+        console.error("Login failed:", error);
+        alert("Login failed. Please check your email and password.");
+      }
+    };
+
+    return {
+      email,
+      password,
+      handleLogin,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #b71c1c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #d32f2f;
+}
+</style>
