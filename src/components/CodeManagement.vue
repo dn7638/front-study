@@ -25,9 +25,6 @@
     <div class="card table-section">
       <div class="table-header">
         <h2>그룹 코드 목록</h2>
-        <button @click="fetchGroupCodes" class="icon-btn refresh-btn">
-          <i class="fas fa-sync-alt"></i>
-        </button>
       </div>
       <div class="table-container">
         <table class="modern-table">
@@ -77,7 +74,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(detail, index) in filteredDetails" :key="detail.codeId">
+            <tr
+              v-for="(detail, index) in filteredDetails"
+              :key="`${detail.codeId}-${detail.isNew}-${detail.isEditing}`"
+            >
               <td class="order-cell">{{ index + 1 }}</td>
               <td>
                 <input
@@ -86,6 +86,7 @@
                   :readonly="!detail.isEditing && !detail.isNew"
                   :class="{ 'edit-mode': detail.isEditing }"
                   class="modern-input"
+                  @focus="handleFocus(index)"
                 />
               </td>
               <td>
@@ -183,6 +184,7 @@ export default {
         type: null, // 'new' | 'edit'
         targetId: null,
       },
+      focusedField: null,
     };
   },
   async created() {
@@ -193,9 +195,9 @@ export default {
   },
   computed: {
     filteredDetails() {
-      return this.detailCodes.filter(
-        (detail) => detail.groupId === this.selectedGroupId
-      );
+      return this.detailCodes
+        .filter((d) => d.groupId === this.selectedGroupId)
+        .map((d) => ({ ...d })); // 새 객체 생성으로 불필요한 리렌더링 방지
     },
   },
   watch: {
@@ -208,6 +210,12 @@ export default {
         if (newGroups.length > 0 && !this.selectedGroupId) {
           this.selectedGroupId = newGroups[0].id;
         }
+      },
+    },
+    detailCodes: {
+      deep: true,
+      handler() {
+        this.$forceUpdate();
       },
     },
   },
@@ -287,6 +295,7 @@ export default {
         active: true,
         isNew: true,
         isEditing: true,
+        tempId: Date.now(), // 고유한 임시 ID 추가
       };
       this.detailCodes.push(newCode);
     },
@@ -348,9 +357,23 @@ export default {
           active: true,
         };
 
-        await axios.post("/api/code-details", payload);
-        detail.isNew = false;
-        detail.isEditing = false;
+        const response = await axios.post("/api/code-details", payload);
+
+        // 임시 데이터 완전 제거
+        this.detailCodes = this.detailCodes.filter(
+          (d) => d.tempId !== detail.tempId
+        );
+
+        // 서버에서 반환한 데이터로 새 항목 추가
+        this.detailCodes.push({
+          ...response.data,
+          isNew: false,
+          isEditing: false,
+        });
+
+        // 정렬 갱신
+        this.detailCodes.sort((a, b) => a.sortOrder - b.sortOrder);
+
         alert("새 코드가 추가되었습니다!");
       } catch (error) {
         alert(`추가 실패: ${error.response?.data?.message || error.message}`);
@@ -388,6 +411,18 @@ export default {
           alert("그룹 코드 삭제에 실패했습니다.");
         }
       }
+    },
+    handleFocus(index) {
+      this.$nextTick(() => {
+        const inputs = this.$el.querySelectorAll(".modern-input");
+        if (inputs[index * 3]) {
+          // 3개의 입력 필드당 1행
+          inputs[index * 3].focus();
+        }
+      });
+    },
+    handleInput(event, field, index) {
+      this.$set(this.filteredDetails[index], field, event.target.value);
     },
   },
 };
@@ -445,7 +480,7 @@ export default {
   padding: 0.5rem 1rem;
   border: 1px solid #dee2e6;
   border-radius: 6px;
-  transition: all 0.3s ease;
+  transition: none !important;
 }
 
 .modern-input:focus {
