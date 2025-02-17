@@ -7,6 +7,12 @@
         class="logo"
       />
       <h1>Welcome to Pet Sitter</h1>
+      <div v-if="isAuthenticated" class="user-info">
+        <p>User ID: {{ authStore.user?.userId ?? "N/A" }}</p>
+        <p>Email: {{ authStore.user?.email ?? "N/A" }}</p>
+        <p>Role: {{ authStore.user?.role ?? "N/A" }}</p>
+        <p>LocalStorage: {{ storedUser }}</p>
+      </div>
     </header>
     <nav class="navigation">
       <router-link to="/">Home</router-link>
@@ -23,6 +29,7 @@
         >Delete Account</router-link
       >
       <router-link to="/users">User List</router-link>
+      <router-link :to="{ name: 'PaymentTest' }">결제테스트</router-link>
       <button v-if="isAuthenticated" @click="handleLogout">Logout</button>
     </nav>
     <main class="main-content">
@@ -52,9 +59,22 @@ export default {
       }
     };
 
+    const currentUserId = computed(() => authStore.user?.userId || "N/A");
+
+    const storedUser = computed(() => {
+      try {
+        return JSON.parse(localStorage.getItem("user") || "null");
+      } catch {
+        return "Invalid user data";
+      }
+    });
+
     return {
       isAuthenticated: computed(() => authStore.isAuthenticated),
       handleLogout,
+      currentUserId,
+      authStore,
+      storedUser,
     };
   },
 };
@@ -93,9 +113,13 @@ export default {
 }
 
 .navigation a {
-  text-decoration: none;
-  color: #b71c1c;
-  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.navigation a:hover {
+  background-color: #ffe5e5;
 }
 
 .navigation a.router-link-exact-active {
@@ -108,5 +132,17 @@ export default {
 
 .hidden {
   display: none;
+}
+
+.user-info {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #b71c1c;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

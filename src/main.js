@@ -7,13 +7,16 @@ import SignUp from "./components/SignUp.vue";
 import DeleteAccount from "./components/DeleteAccount.vue";
 import UserProfile from "./components/UserProfile.vue";
 import UserList from "./components/UserList.vue";
+import HomePage from "./components/Home.vue";
+import PetShopping from "./components/PetShopping.vue";
+import MyPetSitter from "./components/MyPetSitter.vue";
+import PetSitterList from "./components/PetSitterList.vue";
+import PetSitterRegister from "./components/PetSitterRegister.vue";
+import PaymentsTest from "./components/PaymentsTest.vue";
 import { useAuthStore } from "./stores/auth";
 
-// 페이지 컴포넌트 임포트 (추후 구현 예정)
-const HomeComponent = { template: "<div><h1>메인 페이지</h1></div>" };
-
 const routes = [
-  { path: "/", component: HomeComponent },
+  { path: "/", component: HomePage },
   { path: "/signup", component: SignUp, meta: { requiresAuth: false } },
   { path: "/login", component: UserLogin, meta: { requiresAuth: false } },
   { path: "/profile", component: UserProfile, meta: { requiresAuth: true } },
@@ -23,6 +26,32 @@ const routes = [
     meta: { requiresAuth: true },
   },
   { path: "/users", component: UserList, meta: { requiresAuth: true } },
+  {
+    path: "/pet-shopping",
+    component: PetShopping,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/my-pet-sitter",
+    component: MyPetSitter,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/pet-sitter-list",
+    component: PetSitterList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/pet-sitter-register",
+    component: PetSitterRegister,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/payment-test",
+    name: "PaymentTest",
+    component: PaymentsTest,
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

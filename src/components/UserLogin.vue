@@ -12,6 +12,7 @@
       </div>
       <button type="submit">Login</button>
     </form>
+    <button @click="testLogin">테스트 로그인 (개발용)</button>
   </div>
 </template>
 
@@ -35,20 +36,38 @@ export default {
           email: email.value,
           password: password.value,
         });
-        console.log("Login successful:", response.data);
-        authStore.login();
-        alert("Login successful!");
-        router.push("/");
+
+        console.log("로그인 응답 데이터:", response.data);
+
+        if (response.data.userId) {
+          authStore.login({
+            userId: response.data.userId,
+            email: response.data.email,
+          });
+          router.push("/");
+        } else {
+          throw new Error("Invalid user data in response");
+        }
       } catch (error) {
-        console.error("Login failed:", error);
-        alert("Login failed. Please check your email and password.");
+        console.error("Login failed:", error.response?.data || error.message);
+        alert(error.response?.data?.message || "Login failed");
       }
+    };
+
+    const testLogin = () => {
+      authStore.login({
+        userId: 123,
+        email: "test@example.com",
+        name: "테스트사용자",
+      });
+      router.push("/");
     };
 
     return {
       email,
       password,
       handleLogin,
+      testLogin,
     };
   },
 };
