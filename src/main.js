@@ -13,6 +13,7 @@ import MyPetSitter from "./components/MyPetSitter.vue";
 import PetSitterList from "./components/PetSitterList.vue";
 import PetSitterRegister from "./components/PetSitterRegister.vue";
 import PaymentsTest from "./components/PaymentsTest.vue";
+import CodeManagement from "./components/CodeManagement.vue";
 import { useAuthStore } from "./stores/auth";
 
 const routes = [
@@ -50,6 +51,11 @@ const routes = [
     path: "/payment-test",
     name: "PaymentTest",
     component: PaymentsTest,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/code-management",
+    component: CodeManagement,
     meta: { requiresAuth: true },
   },
 ];

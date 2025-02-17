@@ -31,6 +31,9 @@
       <router-link to="/users">User List</router-link>
       <router-link :to="{ name: 'PaymentTest' }">결제테스트</router-link>
       <button v-if="isAuthenticated" @click="handleLogout">Logout</button>
+      <router-link :class="{ hidden: !isAuthenticated }" to="/code-management"
+        >코드 관리</router-link
+      >
     </nav>
     <main class="main-content">
       <router-view />

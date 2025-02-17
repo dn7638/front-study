@@ -17,4 +17,15 @@ module.exports = defineConfig({
       }),
     ],
   },
+  devServer: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:8081", // 백엔드 주소
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": "",
+        },
+      },
+    },
+  },
 });
