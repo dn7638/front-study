@@ -82,8 +82,9 @@ h1 {
 }
 
 .user-table th {
-  background-color: #b71c1c;
+  background-color: #2c3e50;
   color: white;
+  font-weight: 600;
 }
 
 .user-table tr:nth-child(even) {

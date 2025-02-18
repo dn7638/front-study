@@ -152,7 +152,7 @@ export default {
 
 .sidebar {
   width: 250px;
-  background: #2c3e50;
+  background: #1a2b3c;
   color: white;
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -191,7 +191,7 @@ export default {
 }
 
 .nav-item:hover {
-  background: #34495e;
+  background: #2c3e50;
   transform: translateX(5px);
 }
 
@@ -205,11 +205,11 @@ export default {
 
 .logout-button {
   margin-top: auto;
-  background: #e74c3c;
+  background: #2c3e50;
 }
 
 .logout-button:hover {
-  background: #c0392b;
+  background: #1a2b3c;
 }
 
 .main-content {
@@ -236,5 +236,25 @@ export default {
 
 .hidden {
   display: none;
+}
+
+/* 전역 버튼 스타일 */
+button {
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #1a2b3c;
+}
+
+button:disabled {
+  background-color: #7f8c8d;
+  cursor: not-allowed;
 }
 </style>

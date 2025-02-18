@@ -654,7 +654,7 @@ export default {
 }
 
 .modern-select option:checked {
-  background-color: #b71c1c;
+  background-color: #2c3e50;
   color: white;
 }
 

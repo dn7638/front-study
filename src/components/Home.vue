@@ -66,14 +66,15 @@ export default {
 button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #b71c1c;
+  background-color: #2c3e50;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 button:hover {
-  background-color: #d32f2f;
+  background-color: #1a2b3c;
 }
 </style>

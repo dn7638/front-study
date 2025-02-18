@@ -160,7 +160,7 @@ export default {
 }
 
 .modern-table th {
-  background-color: #b71c1c;
+  background-color: #2c3e50;
   color: white;
   font-weight: 600;
 }
@@ -181,7 +181,7 @@ export default {
 
 .reserve-btn {
   padding: 8px 16px;
-  background-color: #b71c1c;
+  background-color: #2c3e50;
   color: white;
   border: none;
   border-radius: 4px;
@@ -190,7 +190,7 @@ export default {
 }
 
 .reserve-btn:hover {
-  background-color: #d32f2f;
+  background-color: #1a2b3c;
 }
 
 .reserve-btn:disabled {
