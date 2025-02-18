@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const instance = axios.create({
+export default axios.create({
   baseURL: "http://localhost:8081", // Base URL for the WAS server
   withCredentials: true, // Ensure cookies are sent with requests
   headers: {
@@ -8,5 +8,3 @@ const instance = axios.create({
     Accept: "application/json",
   },
 });
-
-export default instance;

@@ -11,6 +11,7 @@
             <th>활동 지역</th>
             <th>경력</th>
             <th>자격증</th>
+            <th>예약</th>
           </tr>
         </thead>
         <tbody>
@@ -27,6 +28,15 @@
             <td>{{ petsitter.location }}</td>
             <td>{{ petsitter.experience }}</td>
             <td>{{ petsitter.certification }}</td>
+            <td>
+              <button
+                @click="handleReservation(petsitter.id)"
+                class="reserve-btn"
+                :disabled="!isAuthenticated"
+              >
+                예약
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -36,6 +46,7 @@
 
 <script>
 import axios from "../axios";
+import { useAuthStore } from "../stores/auth";
 
 export default {
   name: "PetSitterList",
@@ -47,6 +58,15 @@ export default {
   async created() {
     await this.fetchPetsitters();
   },
+  setup() {
+    const authStore = useAuthStore();
+    return { authStore };
+  },
+  computed: {
+    isAuthenticated() {
+      return this.authStore.isAuthenticated;
+    },
+  },
   methods: {
     async fetchPetsitters() {
       try {
@@ -56,6 +76,55 @@ export default {
         console.error("펫시터 목록 조회 실패:", error);
         alert("펫시터 목록을 불러오는데 실패했습니다.");
       }
+    },
+    async handleReservation(petsitterId) {
+      if (!this.isAuthenticated) {
+        alert("로그인이 필요합니다.");
+        this.$router.push("/login");
+        return;
+      }
+
+      const { IMP } = window;
+      IMP.init("imp71425567"); // 가맹점 식별코드
+
+      const paymentData = {
+        pg: "uplus",
+        pay_method: "card",
+        merchant_uid: `mid_${new Date().getTime()}`,
+        name: `펫시터 예약 - ${petsitterId}`,
+        amount: 1000,
+        buyer_email: this.authStore.user.email,
+        buyer_name: this.authStore.user.name,
+      };
+
+      IMP.request_pay(paymentData, async (response) => {
+        if (response.success) {
+          try {
+            const bookingResponse = await axios.post(
+              "/api/bookings",
+              {
+                petsitterId: petsitterId,
+                bookingDate: new Date().toISOString(),
+                status: "PAID",
+              },
+              {
+                withCredentials: true,
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            alert(`예약 완료! 예약번호: ${bookingResponse.data.id}`);
+            console.log("예약 내역:", bookingResponse.data);
+          } catch (error) {
+            console.error("예약 생성 실패:", error);
+            alert("예약 정보 저장에 실패했습니다.");
+          }
+        } else {
+          alert(`결제 실패: ${response.error_msg}`);
+        }
+      });
     },
   },
 };
@@ -107,5 +176,24 @@ export default {
   .modern-table {
     min-width: 800px;
   }
+}
+
+.reserve-btn {
+  padding: 8px 16px;
+  background-color: #b71c1c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reserve-btn:hover {
+  background-color: #d32f2f;
+}
+
+.reserve-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 </style>

@@ -79,3 +79,7 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 app.mount("#app");
+
+// 인증 상태 초기화
+const authStore = useAuthStore();
+authStore.initialize();

@@ -6,6 +6,17 @@ export const useAuthStore = defineStore("auth", {
     isAuthenticated: false,
   }),
   actions: {
+    async initialize() {
+      try {
+        const userData = localStorage.getItem("user");
+        if (userData) {
+          this.user = JSON.parse(userData);
+          this.isAuthenticated = true;
+        }
+      } catch (error) {
+        this.logout();
+      }
+    },
     login(rawUserData) {
       this.user = {
         userId: Number(rawUserData.userId),
