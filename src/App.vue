@@ -1,54 +1,103 @@
 <template>
   <div id="app">
-    <header class="app-header">
-      <img
-        src="@/assets/pet-sitter-logo.png"
-        alt="Pet Sitter Logo"
-        class="logo"
-      />
-      <h1>Welcome to Pet Sitter</h1>
-      <div v-if="isAuthenticated" class="user-info">
-        <p>User ID: {{ authStore.user?.userId ?? "N/A" }}</p>
-        <p>Email: {{ authStore.user?.email ?? "N/A" }}</p>
-        <p>Role: {{ authStore.user?.role ?? "N/A" }}</p>
-        <p>LocalStorage: {{ storedUser }}</p>
-      </div>
-    </header>
-    <nav class="navigation">
-      <router-link to="/">Home</router-link>
-      <router-link :class="{ hidden: isAuthenticated }" to="/signup"
-        >Sign Up</router-link
-      >
-      <router-link :class="{ hidden: isAuthenticated }" to="/login"
-        >Login</router-link
-      >
-      <router-link :class="{ hidden: !isAuthenticated }" to="/profile"
-        >Profile</router-link
-      >
-      <router-link :class="{ hidden: !isAuthenticated }" to="/delete-account"
-        >Delete Account</router-link
-      >
-      <router-link to="/users">User List</router-link>
-      <router-link :to="{ name: 'PaymentTest' }">결제테스트</router-link>
-      <button v-if="isAuthenticated" @click="handleLogout">Logout</button>
-      <router-link :class="{ hidden: !isAuthenticated }" to="/code-management"
-        >코드 관리</router-link
-      >
-    </nav>
-    <main class="main-content">
-      <router-view />
-    </main>
+    <div class="app-layout">
+      <nav class="sidebar">
+        <div class="sidebar-header">
+          <img
+            src="@/assets/pet-sitter-logo.png"
+            alt="Pet Sitter Logo"
+            class="logo"
+          />
+          <h2>Pet Sitter</h2>
+        </div>
+        <div class="nav-menu">
+          <button class="nav-item" @click="navigateTo('/')">
+            <span class="material-icons">home</span>
+            <span>Home</span>
+          </button>
+          <button
+            class="nav-item"
+            :class="{ hidden: isAuthenticated }"
+            @click="navigateTo('/signup')"
+          >
+            <span class="material-icons">person_add</span>
+            <span>Sign Up</span>
+          </button>
+          <button
+            class="nav-item"
+            :class="{ hidden: isAuthenticated }"
+            @click="navigateTo('/login')"
+          >
+            <span class="material-icons">login</span>
+            <span>Login</span>
+          </button>
+          <button
+            class="nav-item"
+            :class="{ hidden: !isAuthenticated }"
+            @click="navigateTo('/profile')"
+          >
+            <span class="material-icons">person</span>
+            <span>Profile</span>
+          </button>
+          <button
+            class="nav-item"
+            :class="{ hidden: !isAuthenticated }"
+            @click="navigateTo('/delete-account')"
+          >
+            <span class="material-icons">delete</span>
+            <span>Delete Account</span>
+          </button>
+          <button class="nav-item" @click="navigateTo('/users')">
+            <span class="material-icons">people</span>
+            <span>User List</span>
+          </button>
+          <button class="nav-item" @click="navigateTo('/payment-test')">
+            <span class="material-icons">payment</span>
+            <span>결제테스트</span>
+          </button>
+          <button
+            class="nav-item"
+            :class="{ hidden: !isAuthenticated }"
+            @click="navigateTo('/code-management')"
+          >
+            <span class="material-icons">code</span>
+            <span>코드 관리</span>
+          </button>
+          <button
+            v-if="isAuthenticated"
+            class="nav-item logout-button"
+            @click="handleLogout"
+          >
+            <span class="material-icons">logout</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </nav>
+      <main class="main-content">
+        <div class="content-header">
+          <h1>Welcome to Pet Sitter</h1>
+          <div v-if="isAuthenticated" class="user-info">
+            <p>User ID: {{ authStore.user?.userId ?? "N/A" }}</p>
+            <p>Email: {{ authStore.user?.email ?? "N/A" }}</p>
+            <p>Role: {{ authStore.user?.role ?? "N/A" }}</p>
+          </div>
+        </div>
+        <router-view />
+      </main>
+    </div>
   </div>
 </template>
 
 <script>
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 import { useAuthStore } from "./stores/auth";
 import axios from "./axios"; // Import the configured Axios instance
 
 export default {
   name: "App",
   setup() {
+    const router = useRouter();
     const authStore = useAuthStore();
 
     const handleLogout = async () => {
@@ -72,12 +121,17 @@ export default {
       }
     });
 
+    const navigateTo = (path) => {
+      router.push(path);
+    };
+
     return {
       isAuthenticated: computed(() => authStore.isAuthenticated),
       handleLogout,
       currentUserId,
       authStore,
       storedUser,
+      navigateTo,
     };
   },
 };
@@ -87,65 +141,100 @@ export default {
 #app {
   font-family: "Arial", sans-serif;
   color: #333;
-  text-align: center;
   background-color: #f9f9f9;
   min-height: 100vh;
 }
 
-.app-header {
-  background-color: #b71c1c;
-  padding: 20px;
-  color: white;
+.app-layout {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: #2c3e50;
+  color: white;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .logo {
-  width: 100px;
+  width: 80px;
   height: auto;
   margin-bottom: 10px;
 }
 
-.navigation {
-  margin: 20px 0;
+.nav-menu {
   display: flex;
-  justify-content: center;
-  gap: 15px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.navigation a {
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
 }
 
-.navigation a:hover {
-  background-color: #ffe5e5;
+.nav-item:hover {
+  background: #34495e;
+  transform: translateX(5px);
 }
 
-.navigation a.router-link-exact-active {
-  color: #d32f2f;
+.nav-item:active {
+  transform: translateX(0);
+}
+
+.nav-item span.material-icons {
+  font-size: 20px;
+}
+
+.logout-button {
+  margin-top: auto;
+  background: #e74c3c;
+}
+
+.logout-button:hover {
+  background: #c0392b;
 }
 
 .main-content {
+  flex: 1;
+  padding: 30px;
+  background: #f8f9fa;
+}
+
+.content-header {
+  margin-bottom: 30px;
   padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
 .hidden {
   display: none;
-}
-
-.user-info {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-size: 14px;
-  color: #b71c1c;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>
