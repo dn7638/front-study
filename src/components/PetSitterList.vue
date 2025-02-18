@@ -99,6 +99,7 @@ export default {
 
       IMP.request_pay(paymentData, async (response) => {
         if (response.success) {
+          console.log("response.success = ", response.success);
           try {
             const bookingResponse = await axios.post(
               "/api/bookings",
